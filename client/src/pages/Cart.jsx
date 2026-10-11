@@ -30,7 +30,7 @@ function Cart() {
       }))
 
       await axios.post(
-        'http://localhost:5000/api/orders',
+        'https://cafe-app-a7xq.onrender.com/api/orders',
         { items: orderItems, totalAmount: totalPrice },
         { headers: { Authorization: `Bearer ${user.token}` } }
       )

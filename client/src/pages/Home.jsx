@@ -27,7 +27,7 @@ function Home() {
   const [featuredItems, setFeaturedItems] = useState([])
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/menu')
+    axios.get('https://cafe-app-a7xq.onrender.com/api/menu')
       .then((response) => {
         setFeaturedItems(response.data.slice(0, 4))
       })

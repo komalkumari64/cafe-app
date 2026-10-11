@@ -1,21 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import { useCart } from '../context/CartContext'
 
 function Menu() {
   const { addToCart } = useCart()
 
-  // Dummy menu data
-  const menuItems = [
-    { id: 1, name: "Cappuccino", price: 150, category: "Coffee", image: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400", description: "Rich espresso with steamed milk foam" },
-    { id: 2, name: "Cold Brew", price: 180, category: "Coffee", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400", description: "Smooth, refreshing iced coffee" },
-    { id: 3, name: "Latte", price: 160, category: "Coffee", image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400", description: "Creamy espresso with steamed milk" },
-    { id: 4, name: "Espresso", price: 100, category: "Coffee", image: "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400", description: "Bold and strong shot of coffee" },
-    { id: 5, name: "Croissant", price: 120, category: "Food", image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400", description: "Buttery, flaky, freshly baked" },
-    { id: 6, name: "Club Sandwich", price: 220, category: "Food", image: "https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=400", description: "Loaded with veggies and cheese" },
-    { id: 7, name: "Pasta Alfredo", price: 280, category: "Food", image: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=400", description: "Creamy white sauce pasta" },
-    { id: 8, name: "Chocolate Cake", price: 220, category: "Desserts", image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", description: "Rich, moist, decadent chocolate layers" },
-    { id: 9, name: "Blueberry Muffin", price: 130, category: "Desserts", image: "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400", description: "Soft muffin loaded with blueberries" },
-  ]
+  const [menuItems, setMenuItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    axios.get('https://cafe-app-a7xq.onrender.com/api/menu')
+      .then((response) => {
+        setMenuItems(response.data)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error('Error fetching menu:', error)
+        setLoading(false)
+      })
+  }, [])
 
   const categories = ["All", "Coffee", "Food", "Desserts"]
 
@@ -28,11 +31,18 @@ function Menu() {
     return matchesCategory && matchesSearch
   })
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
+        <p className="text-amber-800 text-lg">Loading menu... (pehli baar 30-50 sec lag sakte hain)</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-amber-50 px-6 py-12">
       <div className="max-w-6xl mx-auto">
 
-        {/* Page Title */}
         <h1 className="text-4xl font-bold text-amber-900 text-center mb-2">
           Our Menu
         </h1>
@@ -40,7 +50,6 @@ function Menu() {
           Explore our range of coffee, food, and desserts
         </p>
 
-        {/* Search Bar */}
         <div className="flex justify-center mb-8">
           <input
             type="text"
@@ -51,7 +60,6 @@ function Menu() {
           />
         </div>
 
-        {/* Category Tabs */}
         <div className="flex justify-center gap-3 mb-10 flex-wrap">
           {categories.map((category) => (
             <button
@@ -68,12 +76,11 @@ function Menu() {
           ))}
         </div>
 
-        {/* Menu Items Grid */}
         {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition"
               >
                 <img
@@ -96,7 +103,7 @@ function Menu() {
                   <div className="flex justify-between items-center mt-4">
                     <span className="text-amber-800 font-bold">₹{item.price}</span>
                     <button
-                      onClick={() => addToCart(item)}
+                      onClick={() => addToCart({ ...item, id: item._id })}
                       className="bg-amber-800 text-white text-sm px-4 py-2 rounded-full hover:bg-amber-900 transition"
                     >
                       Add to Cart

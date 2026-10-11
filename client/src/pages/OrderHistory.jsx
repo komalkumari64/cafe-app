@@ -18,7 +18,7 @@ function OrderHistory() {
     }
 
     // Orders fetch karo
-    axios.get('http://localhost:5000/api/orders/my-orders', {
+    axios.get('https://cafe-app-a7xq.onrender.com/api/orders/my-orders', {
       headers: { Authorization: `Bearer ${user.token}` }
     })
       .then((response) => {
@@ -31,7 +31,7 @@ function OrderHistory() {
       })
 
     // Socket.io connection banao
-    const socket = io('http://localhost:5000')
+    const socket = io('https://cafe-app-a7xq.onrender.com')
 
     // Apna order room join karo
     socket.emit('joinOrderRoom', user._id)
